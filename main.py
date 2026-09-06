@@ -302,7 +302,7 @@ async def moderators_list(message: types.Message):
 # ================= ПОДАЧА ОБЪЯВЛЕНИЯ =================
 
 @dp.message(lambda m: m.text == "📢 Опубликовать объявление")
-async def create_ad(message: types.Message):
+async def create_ad(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
     
     if not await check_subscription(user_id):
@@ -362,13 +362,14 @@ async def process_ad_text(message: types.Message, state: FSMContext):
     if user_mention.lower() not in message.text.lower():
         await message.answer(
             f"❌ В тексте обязательно должен быть указан ваш username: {user_mention}\n"
-            f"Пожалуйста, добавьте его и отправьте текст снова."
+            f"Пожалуйста, добавьте его и отправьте текст снова.",
+            reply_markup=main_kb
         )
         return
     
     await state.update_data(text=message.text, photos=[])
     await message.answer(
-        "Хотите добавить фото к объявлению?",
+        "📸 Хотите добавить фото к объявлению?",
         reply_markup=ask_photo_kb
     )
     await state.set_state(AdForm.ask_photo)

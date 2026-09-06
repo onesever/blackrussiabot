@@ -9,6 +9,7 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 import threading
 
 from aiogram import Bot, Dispatcher, types
+from aiogram.client.default import DefaultBotProperties
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
@@ -43,7 +44,7 @@ SUBSCRIPTION_TEXT = f"\n\n📢 <b>Подпишись на канал:</b> <a hre
 # ===== ЕДИНОЕ КД ДЛЯ ВСЕХ =====
 COOLDOWN_SECONDS = 2 * 60 * 60  # 2 часа (7200 секунд)
 
-# ================= ПУТИ К БАЗЕ ДАННЫХ (ИСПРАВЛЕНО) =================
+# ================= ПУТИ К БАЗЕ ДАННЫХ =================
 
 DATA_DIR = os.path.join(os.getcwd(), "data")
 DB_PATH = os.path.join(DATA_DIR, "database.db")
@@ -71,7 +72,7 @@ threading.Thread(target=start_ping_server, daemon=True).start()
 # ================= INIT =================
 
 logging.basicConfig(level=logging.INFO)
-bot = Bot(token=TOKEN, parse_mode="HTML")
+bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode="HTML"))
 storage = MemoryStorage()
 dp = Dispatcher(storage=storage)
 

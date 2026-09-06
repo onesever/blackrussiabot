@@ -43,9 +43,9 @@ SUBSCRIPTION_TEXT = f"\n\n📢 <b>Подпишись на канал:</b> <a hre
 # ===== ЕДИНОЕ КД ДЛЯ ВСЕХ =====
 COOLDOWN_SECONDS = 2 * 60 * 60  # 2 часа (7200 секунд)
 
-# ================= ПУТИ К БАЗЕ ДАННЫХ =================
+# ================= ПУТИ К БАЗЕ ДАННЫХ (ИСПРАВЛЕНО) =================
 
-DATA_DIR = "/app/data"
+DATA_DIR = os.path.join(os.getcwd(), "data")
 DB_PATH = os.path.join(DATA_DIR, "database.db")
 os.makedirs(DATA_DIR, exist_ok=True)
 

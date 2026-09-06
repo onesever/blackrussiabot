@@ -489,7 +489,6 @@ async def confirm_ad(call: types.CallbackQuery, state: FSMContext):
                 media_group = []
                 for i, photo_id in enumerate(data["photos"]):
                     if i == 0:
-                        # Исправлено: media=photo_id
                         media_group.append(InputMediaPhoto(media=photo_id, caption=mod_text))
                     else:
                         media_group.append(InputMediaPhoto(media=photo_id))
@@ -550,7 +549,6 @@ async def approve_ad(call: types.CallbackQuery):
             media_group = []
             for i, photo_id in enumerate(data["photos"]):
                 if i == 0:
-                    # Исправлено: media=photo_id
                     media_group.append(InputMediaPhoto(media=photo_id, caption=final_text_with_sub))
                 else:
                     media_group.append(InputMediaPhoto(media=photo_id))
@@ -569,6 +567,10 @@ async def approve_ad(call: types.CallbackQuery):
                 await bot.send_message(mod_id, f"📌 <b>Объявление №{ad_id} ОДОБРЕНО</b>\n👮 Модератор: @{call.from_user.username}")
             except:
                 pass
+        
+        # Удаляем объявление из pending_ads (чтобы убрать из "В обработке")
+        if ad_id in pending_ads:
+            del pending_ads[ad_id]
         
         await call.message.edit_reply_markup()
         await call.answer("✅ Объявление одобрено и опубликовано!")
@@ -612,6 +614,10 @@ async def reject_ad(call: types.CallbackQuery):
         except:
             pass
     
+    # Удаляем объявление из pending_ads (чтобы убрать из "В обработке")
+    if ad_id in pending_ads:
+        del pending_ads[ad_id]
+    
     await call.message.edit_reply_markup()
     await call.answer("❌ Объявление отклонено!")
 
@@ -640,6 +646,9 @@ async def admin_users_count(message: types.Message):
     
     conn.close()
     
+    # Получаем количество объявлений в обработке (в pending_ads)
+    in_processing = len(pending_ads)
+    
     await message.answer(
         f"📊 <b>Статистика бота</b>\n\n"
         f"👥 Всего пользователей: {total_users}\n"
@@ -647,7 +656,7 @@ async def admin_users_count(message: types.Message):
         f"⏳ Ожидают модерации: {pending_ads_count}\n"
         f"✅ Одобрено: {approved_ads}\n"
         f"❌ Отклонено: {rejected_ads}\n"
-        f"🔄 В обработке сейчас: {len(processed_ads)}"
+        f"🔄 В обработке сейчас: {in_processing}"
     )
 
 @dp.message(Command("broadcast"))
@@ -655,7 +664,8 @@ async def admin_broadcast(message: types.Message):
     if message.from_user.id != OWNER_ID:
         return
     
-    text = message.get_args()
+    # Получаем текст после команды
+    text = message.text.replace("/broadcast", "").strip()
     if not text:
         await message.answer("❌ Укажите текст рассылки: /broadcast Текст")
         return
@@ -664,6 +674,10 @@ async def admin_broadcast(message: types.Message):
     cursor.execute("SELECT user_id FROM users")
     users = cursor.fetchall()
     conn.close()
+    
+    if not users:
+        await message.answer("❌ Нет пользователей для рассылки.")
+        return
     
     sent = 0
     failed = 0
@@ -730,8 +744,6 @@ async def check_cooldown(message: types.Message):
         f"Может подать сейчас: {'✅' if can_post_now else '❌'}\n"
         f"Осталось: {format_time(remaining) if not can_post_now else '0'}"
     )
-
-# ================= ТЕСТОВАЯ КОМАНДА =================
 
 @dp.message(Command("test_mod"))
 async def test_mod(message: types.Message):

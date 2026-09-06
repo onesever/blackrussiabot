@@ -489,9 +489,10 @@ async def confirm_ad(call: types.CallbackQuery, state: FSMContext):
                 media_group = []
                 for i, photo_id in enumerate(data["photos"]):
                     if i == 0:
-                        media_group.append(InputMediaPhoto(photo_id, caption=mod_text))
+                        # Исправлено: media=photo_id
+                        media_group.append(InputMediaPhoto(media=photo_id, caption=mod_text))
                     else:
-                        media_group.append(InputMediaPhoto(photo_id))
+                        media_group.append(InputMediaPhoto(media=photo_id))
                 
                 await bot.send_media_group(mod_id, media_group)
                 await bot.send_message(mod_id, "Действия:", reply_markup=get_moderation_keyboard(ad_id))
@@ -549,9 +550,10 @@ async def approve_ad(call: types.CallbackQuery):
             media_group = []
             for i, photo_id in enumerate(data["photos"]):
                 if i == 0:
-                    media_group.append(InputMediaPhoto(photo_id, caption=final_text_with_sub))
+                    # Исправлено: media=photo_id
+                    media_group.append(InputMediaPhoto(media=photo_id, caption=final_text_with_sub))
                 else:
-                    media_group.append(InputMediaPhoto(photo_id))
+                    media_group.append(InputMediaPhoto(media=photo_id))
             
             await bot.send_media_group(CHANNEL_USERNAME, media_group)
         else:
@@ -728,6 +730,22 @@ async def check_cooldown(message: types.Message):
         f"Может подать сейчас: {'✅' if can_post_now else '❌'}\n"
         f"Осталось: {format_time(remaining) if not can_post_now else '0'}"
     )
+
+# ================= ТЕСТОВАЯ КОМАНДА =================
+
+@dp.message(Command("test_mod"))
+async def test_mod(message: types.Message):
+    if message.from_user.id != OWNER_ID:
+        return
+    
+    await message.answer("🔄 Проверка отправки модераторам...")
+    
+    for mod_id in MODERATORS:
+        try:
+            await bot.send_message(mod_id, f"🧪 Тестовое сообщение модератору {mod_id}")
+            await message.answer(f"✅ Отправлено модератору {mod_id}")
+        except Exception as e:
+            await message.answer(f"❌ Ошибка для {mod_id}: {e}")
 
 # ================= ЗАПУСК =================
 

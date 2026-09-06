@@ -30,10 +30,17 @@ CHANNEL_USERNAME = "@blackrussia_85"
 CHANNEL_LINK = "https://t.me/blackrussia_85"
 BOT_USERNAME = "blackrussia85_bot"
 
-OWNER_ID = 724545647  # Ваш ID
+# ===== ВЛАДЕЛЕЦ =====
+OWNER_ID = 724545647  # @onesever
 
+# ===== МОДЕРАТОРЫ (все получают уведомления) =====
 MODERATORS = [
-    724545647,  # Только вы — владелец и модератор
+    724545647,    # @onesever (владелец)
+    6636353756,   # @mogetR7
+    8390126598,   # @wrezx
+    5056402700,   # @HeTerry
+    6316052906,   # @Jerry4k
+    8255489398,   # @vuzadi
 ]
 
 MAX_PHOTOS = 5
@@ -293,9 +300,14 @@ async def owner_contact(message: types.Message):
 @dp.message(lambda m: m.text == "👮 Модераторы")
 async def moderators_list(message: types.Message):
     await message.answer(
-        "👮 <b>Текущий модератор:</b>\n\n"
-        "👑 @onesever - Владелец и модератор\n\n"
-        "По всем вопросам обращайтесь к нему.",
+        "👮 <b>Команда модераторов:</b>\n\n"
+        "👑 @onesever — Владелец\n"
+        "🛡️ @mogetR7 — Модератор\n"
+        "🛡️ @wrezx — Модератор\n"
+        "🛡️ @HeTerry — Модератор\n"
+        "🛡️ @Jerry4k — Модератор\n"
+        "🛡️ @vuzadi — Модератор\n\n"
+        "По всем вопросам обращайтесь к любому из них.",
         reply_markup=main_kb
     )
 
